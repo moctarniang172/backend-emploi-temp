@@ -1,0 +1,280 @@
+{
+  "info": {
+    "name": "Emploi du Temps Scolaire - API",
+    "description": "Collection complète des endpoints de l'API. Importer aussi les variables ci-dessous (ou créer un environnement Postman avec baseUrl=http://localhost:5000/api).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api" },
+    { "key": "token", "value": "" },
+    { "key": "matiereId", "value": "" },
+    { "key": "salleId", "value": "" },
+    { "key": "professeurId", "value": "" },
+    { "key": "classeId", "value": "" },
+    { "key": "creneauId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const data = pm.response.json().data;",
+                  "if (data && data.token) { pm.collectionVariables.set('token', data.token); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@ecole.sn\",\n  \"password\": \"Admin123!\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        { "name": "Profil courant (me)", "request": { "method": "GET", "url": "{{baseUrl}}/auth/me" } },
+        {
+          "name": "Changer mot de passe",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"ancienMotDePasse\": \"Admin123!\",\n  \"nouveauMotDePasse\": \"Admin123!\"\n}" },
+            "url": "{{baseUrl}}/auth/change-password"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        { "name": "Lister les comptes", "request": { "method": "GET", "url": "{{baseUrl}}/users" } },
+        {
+          "name": "Créer un compte professeur",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Diop\",\n  \"prenom\": \"Awa\",\n  \"email\": \"awa.diop@ecole.sn\",\n  \"password\": \"Prof123!\",\n  \"role\": \"professeur\",\n  \"refProfesseur\": \"{{professeurId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/users"
+          }
+        },
+        {
+          "name": "Modifier un compte",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"actif\": true\n}" },
+            "url": "{{baseUrl}}/users/:id"
+          }
+        },
+        { "name": "Supprimer un compte", "request": { "method": "DELETE", "url": "{{baseUrl}}/users/:id" } }
+      ]
+    },
+    {
+      "name": "Matieres",
+      "item": [
+        { "name": "Lister les matières", "request": { "method": "GET", "url": "{{baseUrl}}/matieres" } },
+        {
+          "name": "Créer une matière",
+          "event": [
+            {
+              "listen": "test",
+              "script": { "exec": ["const d = pm.response.json().data; if (d && d.matiere) pm.collectionVariables.set('matiereId', d.matiere._id);"] }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nom\": \"Mathématiques\",\n  \"code\": \"MATH301\",\n  \"volumeHoraire\": 60\n}" },
+            "url": "{{baseUrl}}/matieres"
+          }
+        },
+        {
+          "name": "Modifier une matière",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"volumeHoraire\": 80\n}" },
+            "url": "{{baseUrl}}/matieres/{{matiereId}}"
+          }
+        },
+        { "name": "Supprimer une matière", "request": { "method": "DELETE", "url": "{{baseUrl}}/matieres/{{matiereId}}" } }
+      ]
+    },
+    {
+      "name": "Salles",
+      "item": [
+        { "name": "Lister les salles", "request": { "method": "GET", "url": "{{baseUrl}}/salles" } },
+        {
+          "name": "Créer une salle",
+          "event": [
+            {
+              "listen": "test",
+              "script": { "exec": ["const d = pm.response.json().data; if (d && d.salle) pm.collectionVariables.set('salleId', d.salle._id);"] }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nom\": \"Salle B12\",\n  \"capacite\": 30,\n  \"type\": \"standard\"\n}" },
+            "url": "{{baseUrl}}/salles"
+          }
+        },
+        {
+          "name": "Modifier une salle",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"capacite\": 35\n}" },
+            "url": "{{baseUrl}}/salles/{{salleId}}"
+          }
+        },
+        { "name": "Supprimer une salle", "request": { "method": "DELETE", "url": "{{baseUrl}}/salles/{{salleId}}" } }
+      ]
+    },
+    {
+      "name": "Professeurs",
+      "item": [
+        { "name": "Lister les professeurs", "request": { "method": "GET", "url": "{{baseUrl}}/professeurs" } },
+        {
+          "name": "Créer un professeur",
+          "event": [
+            {
+              "listen": "test",
+              "script": { "exec": ["const d = pm.response.json().data; if (d && d.professeur) pm.collectionVariables.set('professeurId', d.professeur._id);"] }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Diop\",\n  \"prenom\": \"Awa\",\n  \"email\": \"awa.diop@ecole.sn\",\n  \"matieresEnseignees\": [\"{{matiereId}}\"],\n  \"disponibilites\": [\n    { \"jour\": \"Lundi\", \"creneaux\": [{ \"heureDebut\": \"08:00\", \"heureFin\": \"12:00\" }] }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/professeurs"
+          }
+        },
+        {
+          "name": "Modifier un professeur",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"telephone\": \"771234567\"\n}" },
+            "url": "{{baseUrl}}/professeurs/{{professeurId}}"
+          }
+        },
+        {
+          "name": "Modifier les disponibilités",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"disponibilites\": [\n    { \"jour\": \"Lundi\", \"creneaux\": [{ \"heureDebut\": \"08:00\", \"heureFin\": \"12:00\" }] },\n    { \"jour\": \"Mardi\", \"creneaux\": [{ \"heureDebut\": \"14:00\", \"heureFin\": \"17:00\" }] }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/professeurs/{{professeurId}}/disponibilites"
+          }
+        },
+        { "name": "Supprimer un professeur", "request": { "method": "DELETE", "url": "{{baseUrl}}/professeurs/{{professeurId}}" } }
+      ]
+    },
+    {
+      "name": "Classes",
+      "item": [
+        { "name": "Lister les classes", "request": { "method": "GET", "url": "{{baseUrl}}/classes" } },
+        {
+          "name": "Créer une classe (génère le compte étudiant)",
+          "event": [
+            {
+              "listen": "test",
+              "script": { "exec": ["const d = pm.response.json().data; if (d && d.classe) pm.collectionVariables.set('classeId', d.classe._id);"] }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"L2 Info\",\n  \"filiere\": \"Informatique\",\n  \"niveau\": \"L2\",\n  \"effectif\": 25,\n  \"anneeScolaire\": \"2025-2026\"\n}"
+            },
+            "url": "{{baseUrl}}/classes"
+          }
+        },
+        {
+          "name": "Modifier une classe",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"effectif\": 28\n}" },
+            "url": "{{baseUrl}}/classes/{{classeId}}"
+          }
+        },
+        { "name": "Supprimer une classe", "request": { "method": "DELETE", "url": "{{baseUrl}}/classes/{{classeId}}" } }
+      ]
+    },
+    {
+      "name": "Créneaux",
+      "item": [
+        { "name": "Lister tous les créneaux (admin)", "request": { "method": "GET", "url": "{{baseUrl}}/creneaux" } },
+        { "name": "Emploi du temps d'une classe", "request": { "method": "GET", "url": "{{baseUrl}}/creneaux/classe/{{classeId}}" } },
+        { "name": "Emploi du temps d'une classe (PDF)", "request": { "method": "GET", "url": "{{baseUrl}}/creneaux/classe/{{classeId}}/pdf" } },
+        { "name": "Emploi du temps d'un professeur", "request": { "method": "GET", "url": "{{baseUrl}}/creneaux/professeur/{{professeurId}}" } },
+        { "name": "Emploi du temps d'un professeur (PDF)", "request": { "method": "GET", "url": "{{baseUrl}}/creneaux/professeur/{{professeurId}}/pdf" } },
+        {
+          "name": "Vérifier les conflits (à blanc)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"classe\": \"{{classeId}}\",\n  \"matiere\": \"{{matiereId}}\",\n  \"professeur\": \"{{professeurId}}\",\n  \"salle\": \"{{salleId}}\",\n  \"jour\": \"Lundi\",\n  \"heureDebut\": \"08:00\",\n  \"heureFin\": \"10:00\",\n  \"anneeScolaire\": \"2025-2026\"\n}"
+            },
+            "url": "{{baseUrl}}/creneaux/check-conflicts"
+          }
+        },
+        {
+          "name": "Créer un créneau",
+          "event": [
+            {
+              "listen": "test",
+              "script": { "exec": ["const d = pm.response.json().data; if (d && d.creneau) pm.collectionVariables.set('creneauId', d.creneau._id);"] }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"classe\": \"{{classeId}}\",\n  \"matiere\": \"{{matiereId}}\",\n  \"professeur\": \"{{professeurId}}\",\n  \"salle\": \"{{salleId}}\",\n  \"jour\": \"Lundi\",\n  \"heureDebut\": \"08:00\",\n  \"heureFin\": \"10:00\",\n  \"anneeScolaire\": \"2025-2026\"\n}"
+            },
+            "url": "{{baseUrl}}/creneaux"
+          }
+        },
+        {
+          "name": "Modifier un créneau",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"heureDebut\": \"09:00\",\n  \"heureFin\": \"11:00\"\n}" },
+            "url": "{{baseUrl}}/creneaux/{{creneauId}}"
+          }
+        },
+        { "name": "Supprimer un créneau", "request": { "method": "DELETE", "url": "{{baseUrl}}/creneaux/{{creneauId}}" } }
+      ]
+    }
+  ]
+}

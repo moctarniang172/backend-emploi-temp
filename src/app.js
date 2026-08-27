@@ -11,7 +11,8 @@ const errorHandler = require('./middleware/error.middleware');
 
 const app = express();
 
-app.use(cors({ origin: env.FRONTEND_URL, credentials: true }));
+// app.use(cors({ origin: env.FRONTEND_URL, credentials: true }));
+app.use(cors());
 app.use(express.json());
 
 app.use('/api', routes);

@@ -1,6 +1,6 @@
 // Point d'entrée du backend : connecte la base de données puis démarre le serveur HTTP.
 
-const app = require('./src/app');
+const app = require('./src/app.js');
 const connectDB = require('./config/db');
 const env = require('./config/env');
 
